@@ -38,12 +38,6 @@ GLOG_INCLUDE_DIR to directory containing glog/logging.h
 Call Stack (most recent call first):
 cmake/FindGlog.cmake:103 (GLOG_REPORT_NOT_FOUND)
 CMakeLists.txt:27 (FIND_PACKAGE)
-
-##### libglog.a and libglog.a are two files installed in /usr/lib to make find_package() enable to find Glog.
-when installing glog, it shows when it is without sudo:  
-CMake Error at cmake_install.cmake:36 (file):  
-  file INSTALL cannot copy file "/home/nipnie/glog/build/libglog.a" to  
-  "/usr/local/lib/libglog.a".  
   
 #### The solution is to reinstall glog and rebuid it.
 
