@@ -30,6 +30,7 @@ cmake --build build --target test
 ```
 cmake --build build --target install
 ```
+
 #### Issue: Failed to find glog
 CMake Error at cmake/FindGlog.cmake:77 (MESSAGE):
 Failed to find glog - Could not find glog include directory, set
@@ -39,7 +40,7 @@ cmake/FindGlog.cmake:103 (GLOG_REPORT_NOT_FOUND)
 CMakeLists.txt:27 (FIND_PACKAGE)
 
 ##### libglog.a and libglog.a are two files installed in /usr/lib to make find_package() enable to find Glog.
-when installing glog, it shows without sudo:  
+when installing glog, it shows when it is without sudo:  
 CMake Error at cmake_install.cmake:36 (file):  
   file INSTALL cannot copy file "/home/nipnie/glog/build/libglog.a" to  
   "/usr/local/lib/libglog.a".  
@@ -49,7 +50,7 @@ CMake Error at cmake_install.cmake:36 (file):
 
 
 ### gtest package
-#### Issue: build.sh: Could NOT find GTest (missing: GTEST_LIBRARY GTEST_MAIN_LIBRARY) #571
+#### Issue: Could NOT find GTest (missing: GTEST_LIBRARY GTEST_MAIN_LIBRARY) #571
 ##### I find gtest in /usr/src, but it seems that it is not built and compiled, so I build and compilte gtest.
 
 ```
