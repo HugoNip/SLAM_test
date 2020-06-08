@@ -58,3 +58,15 @@ sudo make
 ```
 sudo cp *.a /usr/lib
 ```
+
+### Gflags Package
+#### Source
+https://github.com/gflags/gflags
+#### Build and compile
+```
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
