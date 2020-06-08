@@ -52,14 +52,16 @@ CMake Error at cmake_install.cmake:36 (file):
 ### gtest package
 #### Issue
 build.sh: Could NOT find GTest (missing: GTEST_LIBRARY GTEST_MAIN_LIBRARY) #571
-
+##### I find gtest in /usr/src, but it seems that it is not built and compiled, so I build and compilte gtest.
 
 ```
 sudo apt-get install cmake libgtest-dev
 cd /usr/src/gtest
 sudo cmake CMakeLists.txt
 sudo make
- 
-# copy or symlink libgtest.a and libgtest_main.a to your /usr/lib folder
+```
+
+##### Then, copy or symlink libgtest.a and libgtest_main.a to your /usr/lib folder
+```
 sudo cp *.a /usr/lib
 ```
