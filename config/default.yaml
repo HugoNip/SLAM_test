@@ -1,6 +1,6 @@
 %YAML:1.0
 # data
-dataset_dir: /home/nipnie/data/data_odometry_gray/sequences/00
+dataset_dir: /home/nipnie/data/data_odometry_gray/sequences/05
 
 # camera intrinsics
 camera.fx: 517.3
