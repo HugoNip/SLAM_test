@@ -8,7 +8,7 @@ namespace myslam {
     MapPoint::Ptr MapPoint::CreateNewMappoint() { // Static functions in a class
         static long factory_id = 0; // static variable in a function, lifetime
         MapPoint::Ptr new_mappoint(new MapPoint);
-        new_mappoint->id_ = factory_id;
+        new_mappoint->id_ = factory_id++;
         return new_mappoint;
     }
 
