@@ -31,6 +31,17 @@ namespace myslam {
         // set functions
         void SetMap(Map::Ptr map) { map_ = map; }
 
+        void SetBackend(std::shared_ptr<Backend> backend) { backend_ = backend; }
+
+        void SetViewer(std::shared_ptr<Viewer> viewer) { viewer_ = viewer; }
+
+        FrontendStatus GetStatus() const { return status_; }
+
+        void SetCameras(Camera::Ptr left, Camera::Ptr right) {
+            camera_left_ = left;
+            camera_right_ = right;
+        }
+
     private:
         /**
          * Track in normal mode
@@ -63,7 +74,7 @@ namespace myslam {
         bool InsertKeyframe();
 
         /**
-         * Try init the frontend with stereo images saved in current_frame_
+         * Try initialize the frontend with stereo images saved in current_frame_
          * @return true if success
          */
         bool StereoInit();

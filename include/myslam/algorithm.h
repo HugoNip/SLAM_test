@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
 
@@ -25,7 +23,7 @@ namespace myslam {
             D.block<1, 4>(2 * i + 1, 0) =
                     points[i][1] * m.row(2) - m.row(1); // [v_i P_i,3^T - P_i,2_T]
         }
-        auto svd = D.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeFullV);
+        auto svd = D.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
         pt_world = (svd.matrixV().col(3) / svd.matrixV()(3, 3)).head<3>(); // y = u_4
 
         if (svd.singularValues()[3] / svd.singularValues()[2] < 1e-2) {

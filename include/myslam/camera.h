@@ -39,7 +39,7 @@ public:
 
     // coordinate transform: world, camera, pixel
     Vec3 world2camera(const Vec3 &p_w, const SE3 &T_c_w);
-    Vec3 camera2world(const Vec3 &p_c, const SE3 &T_w_c);
+    Vec3 camera2world(const Vec3 &p_c, const SE3 &T_c_w);
     Vec2 camera2pixel(const Vec3 &p_c);
     Vec3 pixel2camera(const Vec2 &p_p, double depth = 1);
     Vec3 pixel2world(const Vec2 &p_p, const SE3 &T_c_w, double depth = 1);

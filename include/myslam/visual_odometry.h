@@ -24,15 +24,22 @@ namespace myslam{
 
         bool Step();
 
+        //
+        FrontendStatus GetFrontendStatus() const { return frontend_->GetStatus(); }
+
     private:
         bool inited_ = false;
         std::string config_file_path_;
 
+        Frontend::Ptr frontend_ = nullptr;
+        Backend::Ptr backend_ = nullptr;
+        Map::Ptr map_ = nullptr;
+        Viewer::Ptr viewer_ = nullptr;
 
+        // dataset
+        Dataset::Ptr dataset_ = nullptr;
     };
-}
 
-
-
+} // namespace myslam
 
 #endif //VISUAL_ODOMETRY_H

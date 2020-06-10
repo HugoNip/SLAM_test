@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef BACKEND_H
 #define BACKEND_H
 
@@ -13,7 +11,8 @@ namespace myslam {
     /**
      * Backend
      * has independent optimized thread, it will start when the map updates
-     * the upating of map is activated by frondend
+     * the updating of map is activated by frondend
+     * backend_->UpdateMap()
      */
     class Backend {
     public:
@@ -28,7 +27,7 @@ namespace myslam {
             cam_right_ = right;
         }
 
-        void Setmap(std::shared_ptr<Map> map) { map_ = map; }
+        void SetMap(std::shared_ptr<Map> map) { map_ = map; }
 
         void UpdateMap();
 
@@ -38,7 +37,7 @@ namespace myslam {
         void BackendLoop();
 
         // optimize the keyframe and landmarks
-        void Optimize(Map::KeyframeType& keyframes, Map::LandmarksType& landmarks);
+        void Optimize(Map::KeyframesType& keyframes, Map::LandmarksType& landmarks);
 
         std::shared_ptr<Map> map_;
         std::thread backend_thread_;

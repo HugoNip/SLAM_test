@@ -71,7 +71,7 @@ typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> MatXXf;
 // double vectors
 typedef Eigen::Matrix<double, 14, 1> Vec14;
 typedef Eigen::Matrix<double, 13, 1> Vec13;
-typedef Eigen::Matrix<double, 12, 1> Vec12f;
+typedef Eigen::Matrix<double, 12, 1> Vec12;
 typedef Eigen::Matrix<double, 10, 1> Vec10;
 typedef Eigen::Matrix<double, 9, 1> Vec9;
 typedef Eigen::Matrix<double, 8, 1> Vec8;

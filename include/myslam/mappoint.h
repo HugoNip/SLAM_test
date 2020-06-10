@@ -24,7 +24,7 @@ namespace myslam {
         int observed_times_ = 0; // being observed by feature matching algorithm
         std::list<std::weak_ptr<Feature>> observations_;
 
-        MapPoint() {};
+        MapPoint() {}
 
         MapPoint(long id, Vec3 position);
 

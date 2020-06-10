@@ -4,7 +4,7 @@
 #define FEATURE_H
 
 #include <memory>
-#include "opencv2/features2d.hpp"
+#include <opencv2/features2d.hpp>
 #include "common_include.h"
 
 namespace myslam {

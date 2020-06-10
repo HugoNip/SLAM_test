@@ -18,9 +18,9 @@ namespace myslam{
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
         typedef std::shared_ptr<Map> Ptr;
         typedef std::unordered_map<unsigned long, MapPoint::Ptr> LandmarksType;
-        typedef std::unordered_map<unsigned long, Frame::Ptr> KeyframeType;
+        typedef std::unordered_map<unsigned long, Frame::Ptr> KeyframesType;
 
-        Map() {};
+        Map() {}
 
         void InsertKeyFrame(Frame::Ptr frame);
         void InsertMapPoint(MapPoint::Ptr map_point);
@@ -30,7 +30,7 @@ namespace myslam{
             return landmarks_;
         }
 
-        KeyframeType GetAllKeyFrames() {
+        KeyframesType GetAllKeyFrames() {
             std::unique_lock<std::mutex> lck(data_mutex_);
             return keyframes_;
         }
@@ -40,7 +40,7 @@ namespace myslam{
             return active_landmarks_;
         }
 
-        KeyframeType GetActiveKeyFrames() {
+        KeyframesType GetActiveKeyFrames() {
             std::unique_lock<std::mutex> lck(data_mutex_);
             return active_keyframes_;
         }
@@ -55,8 +55,8 @@ namespace myslam{
         std::mutex data_mutex_;
         LandmarksType landmarks_; // all landmarks
         LandmarksType active_landmarks_; // active landmarks
-        KeyframeType keyframes_; // all keyframes
-        KeyframeType active_keyframes_; // active keyframes
+        KeyframesType keyframes_; // all keyframes
+        KeyframesType active_keyframes_; // active keyframes
 
         Frame::Ptr current_frame_ = nullptr;
 
