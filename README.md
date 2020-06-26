@@ -1,5 +1,17 @@
-# mySLAM
+# Introduction
+This project shows a example of SLAM.
 
+# Results
+### Point cloud map
+![Screenshot%20from%202020-06-25%2021-37-02.png](https://github.com/HugoNip/mySLAM/blob/master/figures/Screenshot%20from%202020-06-25%2021-37-02.png)
+
+### Keypoint (green color)
+![Screenshot%20from%202020-06-25%2021-37-55.png](https://github.com/HugoNip/mySLAM/blob/master/figures/Screenshot%20from%202020-06-25%2021-37-55.png)
+
+### Data
+![Screenshot%20from%202020-06-25%2021-38-42.png](https://github.com/HugoNip/mySLAM/blob/master/figures/Screenshot%20from%202020-06-25%2021-38-42.png)
+
+# Required Packages
 ### Glog Package
 #### Source
 https://github.com/google/glog/blob/master/cmake/INSTALL.md
@@ -70,3 +82,14 @@ cmake ..
 make
 sudo make install
 ```
+
+## Run
+```
+./bin/run_kitti_stereo
+./bin/test_triangulation
+```
+
+
+## Reference
+[Source](https://github.com/HugoNip/slambook2/tree/master/ch13)
+
