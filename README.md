@@ -83,6 +83,15 @@ make
 sudo make install
 ```
 
+# Compile this Project
+## Compile and install
+```
+mkdir build
+cd build
+cmake ..
+make 
+```
+
 ## Run
 ```
 ./bin/run_kitti_stereo
@@ -90,6 +99,6 @@ sudo make install
 ```
 
 
-## Reference
+# Reference
 [Source](https://github.com/HugoNip/slambook2/tree/master/ch13)
 
