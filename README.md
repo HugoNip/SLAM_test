@@ -11,6 +11,28 @@ This project shows a example of SLAM.
 ### Data
 ![Screenshot%20from%202020-06-25%2021-38-42.png](https://github.com/HugoNip/mySLAM/blob/master/figures/Screenshot%20from%202020-06-25%2021-38-42.png)
 
+# Dataset
+[Source](http://www.cvlibs.net/download.php?file=data_odometry_gray.zip)
+
+# Compile this Project
+## Compile and install
+```
+mkdir build
+cd build
+cmake ..
+make 
+```
+
+## Run
+```
+./bin/run_kitti_stereo
+./bin/test_triangulation
+```
+
+
+# Reference
+[Source](https://github.com/HugoNip/slambook2/tree/master/ch13)
+
 # Required Packages
 ### Glog Package
 #### Source
@@ -82,23 +104,3 @@ cmake ..
 make
 sudo make install
 ```
-
-# Compile this Project
-## Compile and install
-```
-mkdir build
-cd build
-cmake ..
-make 
-```
-
-## Run
-```
-./bin/run_kitti_stereo
-./bin/test_triangulation
-```
-
-
-# Reference
-[Source](https://github.com/HugoNip/slambook2/tree/master/ch13)
-
