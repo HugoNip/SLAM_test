@@ -2,7 +2,6 @@
 
 #include "myslam/algorithm.h"
 #include "myslam/backend.h"
-#include "myslam/config.h"
 #include "myslam/feature.h"
 #include "myslam/frontend.h"
 #include "myslam/g2o_types.h"
@@ -13,11 +12,7 @@ namespace myslam {
 
     Frontend::Frontend() {
 
-        gftt_ = cv::GFTTDetector::create(Config::Get<int>("num_features"), 0.01, 20);
-        num_features_init_ = Config::Get<int>("num_features_init");
-        num_features_ = Config::Get<int>("num_features");
-
-        std::cout << num_features_init_ << std::endl;
+        gftt_ = cv::GFTTDetector::create(num_features_, 0.01, 20);
 
     }
 

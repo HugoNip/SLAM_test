@@ -6,14 +6,13 @@
 #include <opencv2/opencv.hpp>
 
 namespace myslam {
-    Dataset::Dataset(const std::string &dataset_path)
-            : dataset_path_(dataset_path){}
+    Dataset::Dataset(const std::string &dataset_path): dataset_path_(dataset_path){}
 
     bool Dataset::Init() {
         // read camera intrinsics and extrinsics
-        std::ifstream fin(dataset_path_ + "/calib.txt");
+        std::ifstream fin(dataset_path_ + "/calib.txt"); // read file
         if (!fin) {
-            LOG(ERROR) << "cannot find " << dataset_path_ << "/cablib.txt!";
+            LOG(ERROR) << "cannot find " << dataset_path_ << "/calib.txt!";
             return false;
         }
 
@@ -35,7 +34,8 @@ namespace myslam {
         for (int i = 0; i < 4; ++i) {
             char camera_name[3];
             for (int k = 0; k < 3; ++k) {
-                fin >> camera_name[k];
+                fin >> camera_name[k]; // read file
+                // std::cout << camera_name[k] << std::endl;
             }
             double projection_data[12];
             for (int k = 0; k < 12; ++k) {

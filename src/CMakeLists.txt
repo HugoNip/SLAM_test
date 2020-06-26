@@ -3,7 +3,6 @@ add_library(myslam SHARED
         mappoint.cpp
         map.cpp
         camera.cpp
-        config.cpp
         feature.cpp
         frontend.cpp
         backend.cpp

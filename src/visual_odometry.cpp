@@ -1,18 +1,15 @@
 #include "myslam/visual_odometry.h"
 #include <chrono>
-#include "myslam/config.h"
 
 namespace myslam {
-    VisualOdometry::VisualOdometry(std::string &config_path)
-        : config_file_path_(config_path) {}
+    VisualOdometry::VisualOdometry(std::string &config_path):config_file_path_(config_path) {}
 
     bool VisualOdometry::Init() {
-        // read from config file
-        if (Config::SetParameterFile(config_file_path_) == false) {
-            return false;
-        }
 
-        dataset_ = Dataset::Ptr(new Dataset(Config::Get<std::string>("dataset_dir")));
+        // read from config file
+        cv::FileStorage file_(config_file_path_.c_str(), cv::FileStorage::READ);
+
+        dataset_ = Dataset::Ptr(new Dataset(file_["dataset_dir"]));
         CHECK_EQ(dataset_->Init(), true);
 
         // create components and links
