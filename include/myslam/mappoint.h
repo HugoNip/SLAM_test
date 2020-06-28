@@ -10,18 +10,23 @@ namespace myslam {
     struct Feature;
 
     /**
-     * landmark
+     * landmarks in 3D space (world coordinate)
+     * class MapPoint provide the 3D position (pos_) of landmarks
      * feature converts to landmark after trianglation
      */
     struct MapPoint {
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
         typedef std::shared_ptr<MapPoint> Ptr;
         unsigned long id_ = 0; // ID
         bool is_outlier_ = false;
-        Vec3 pos_ = Vec3::Zero(); // position in the world
+        Vec3 pos_ = Vec3::Zero(); // position in the world coordinate
         std::mutex data_mutex_;
-        int observed_times_ = 0; // being observed by feature matching algorithm
+        // observed_times_ shows how many times the MapPoint is observed by features
+        // or how many features/frames correspond to this MapPoint
+        int observed_times_ = 0; // no feature/frame corresponding to this landmark/MapPoint
+        // observations_ show which features can observe this MapPoint
         std::list<std::weak_ptr<Feature>> observations_;
 
         MapPoint() {}
@@ -44,6 +49,8 @@ namespace myslam {
             observed_times_++;
         }
 
+        // when feature is outlier
+        // the observations/MapPoint will be removed
         void RemoveObservation(std::shared_ptr<Feature> feat);
 
         std::list<std::weak_ptr<Feature>> GetObs() {

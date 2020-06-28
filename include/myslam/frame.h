@@ -50,6 +50,7 @@ public:
     }
 
     // set keyframe and id
+    // keyframes_.find(frame->keyframe_id_) == keyframes_.end() in map.cpp
     void SetKeyFrame();
 
     // factory mode and id

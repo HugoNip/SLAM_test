@@ -13,15 +13,15 @@ struct Frame;
 struct MapPoint;
 
 /**
- * 2D keypoint
+ * 2D keypoint is the main information which class Feature can provide
  */
 struct Feature {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Feature> Ptr;
 
-    std::weak_ptr<Frame> frame_;
-    cv::KeyPoint position_;
+    std::weak_ptr<Frame> frame_; // the frame which contains this feature
+    cv::KeyPoint position_; // 2D position on the image
     std::weak_ptr<MapPoint> map_point_; // corresponding map point
 
     bool is_outlier_ = false;

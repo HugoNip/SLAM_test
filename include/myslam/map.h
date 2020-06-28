@@ -9,13 +9,14 @@
 
 namespace myslam{
     /**
- * interact with map
- * for frontend, use InsertKeyframe and InsertMapPoint to insert new keypoint and mappoint
- * for backend, improve the map, recognize the outlier and remove it
- */
+     * interact with map
+     * for frontend, use InsertKeyframe and InsertMapPoint to insert new keyframe and MapPoint
+     * for backend, improve the map, recognize the outlier and remove it
+     */
     class Map {
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
         typedef std::shared_ptr<Map> Ptr;
         typedef std::unordered_map<unsigned long, MapPoint::Ptr> LandmarksType;
         typedef std::unordered_map<unsigned long, Frame::Ptr> KeyframesType;
@@ -25,21 +26,25 @@ namespace myslam{
         void InsertKeyFrame(Frame::Ptr frame);
         void InsertMapPoint(MapPoint::Ptr map_point);
 
+        // get all MapPoints
         LandmarksType GetAllMapPoints() {
             std::unique_lock<std::mutex> lck(data_mutex_);
             return landmarks_;
         }
 
+        // get all keyframes
         KeyframesType GetAllKeyFrames() {
             std::unique_lock<std::mutex> lck(data_mutex_);
             return keyframes_;
         }
 
+        // get active MapPoints
         LandmarksType GetActiveMapPoints() {
             std::unique_lock<std::mutex> lck(data_mutex_);
             return active_landmarks_;
         }
 
+        // get active keyframes
         KeyframesType GetActiveKeyFrames() {
             std::unique_lock<std::mutex> lck(data_mutex_);
             return active_keyframes_;
@@ -52,7 +57,7 @@ namespace myslam{
         // Set old keyframe to inactive status
         void RemoveOldKeyframe();
 
-        std::mutex data_mutex_;
+        std::mutex data_mutex_; // lock
         LandmarksType landmarks_; // all landmarks
         LandmarksType active_landmarks_; // active landmarks
         KeyframesType keyframes_; // all keyframes
