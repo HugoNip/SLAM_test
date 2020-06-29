@@ -189,28 +189,39 @@ namespace myslam {
         g2o::SparseOptimizer optimizer;
         optimizer.setAlgorithm(solver);
 
-        // vertex
+        // add vertex
+        // set current camera pose as vertex
         VertexPose *vertex_pose = new VertexPose(); // camera vertex_pose
         vertex_pose->setId(0);
-        vertex_pose->setEstimate(current_frame_->Pose());
+        vertex_pose->setEstimate(current_frame_->Pose()); // Pose is to be estimated, x
         optimizer.addVertex(vertex_pose);
 
         // K
         Mat33 K = camera_left_->K();
 
-        // edges
+        // add edges
+        // set projected point in the current frame as edges
+        // there are many points, size = current_frame_->features_left_.size()
         int index = 1;
         std::vector<EdgeProjectionPoseOnly *> edges;
         std::vector<Feature::Ptr> features;
+
         for (size_t i = 0; i < current_frame_->features_left_.size(); ++i) {
             auto mp = current_frame_->features_left_[i]->map_point_.lock();
             if (mp) {
                 features.push_back(current_frame_->features_left_[i]);
                 EdgeProjectionPoseOnly* edge = new EdgeProjectionPoseOnly(mp->pos_, K);
                 edge->setId(index);
+
+                // set the connected vertex
                 edge->setVertex(0, vertex_pose);
+
+                // set measurement/practical value, z
                 edge->setMeasurement(toVec2(current_frame_->features_left_[i]->position_.pt));
+
+                // information matrix
                 edge->setInformation(Eigen::Matrix2d::Identity());
+
                 edge->setRobustKernel(new g2o::RobustKernelHuber);
                 edges.push_back(edge);
                 optimizer.addEdge(edge);
@@ -218,13 +229,15 @@ namespace myslam {
             }
         }
 
-        // estimate the Pose then determine the outliers
+        // implement the optimization to estimate the Pose,
+        // and then, determine the outliers
         const double chi2_th = 5.991;
         int cnt_outlier = 0;
         for (int iteration = 0; iteration < 4; ++iteration) {
             vertex_pose->setEstimate(current_frame_->Pose());
             optimizer.initializeOptimization();
             optimizer.optimize(10);
+
             cnt_outlier = 0;
 
             // count the outliers
