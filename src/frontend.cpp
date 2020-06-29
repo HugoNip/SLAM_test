@@ -175,7 +175,7 @@ namespace myslam {
             }
         }
 
-        LOG(INFO) << "new landmarks: " << cnt_triangulated_pts;
+        LOG(INFO) << "There are " << cnt_triangulated_pts << " new landmarks inserted into the existed 3D map.";
 
         return cnt_triangulated_pts;
     }
@@ -185,8 +185,7 @@ namespace myslam {
         typedef g2o::BlockSolver_6_3 BlockSolverType;
         typedef g2o::LinearSolverDense<BlockSolverType::PoseMatrixType> LinearSolverType;
         auto solver = new g2o::OptimizationAlgorithmLevenberg(
-                g2o::make_unique<BlockSolverType>(
-                        g2o::make_unique<LinearSolverType>()));
+                g2o::make_unique<BlockSolverType>(g2o::make_unique<LinearSolverType>()));
         g2o::SparseOptimizer optimizer;
         optimizer.setAlgorithm(solver);
 
@@ -248,8 +247,8 @@ namespace myslam {
             }
         }
 
-        LOG(INFO) << "Outlier/Inlier in pose estimating: " << cnt_outlier << "/"
-                    << features.size() - cnt_outlier;
+        LOG(INFO) << "Outlier/Inlier in pose estimating: "
+                  << cnt_outlier << "/" << features.size() - cnt_outlier;
 
         // Set pose and outlier
         current_frame_->SetPose(vertex_pose->estimate());
