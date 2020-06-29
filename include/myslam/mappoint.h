@@ -23,9 +23,12 @@ namespace myslam {
         bool is_outlier_ = false;
         Vec3 pos_ = Vec3::Zero(); // position in the world coordinate
         std::mutex data_mutex_;
+
         // observed_times_ shows how many times the MapPoint is observed by features
         // or how many features/frames correspond to this MapPoint
-        int observed_times_ = 0; // no feature/frame corresponding to this landmark/MapPoint
+        // value of 0 means no feature/frame corresponding to this landmark/MapPoint
+        int observed_times_ = 0;
+
         // observations_ show which features can observe this MapPoint
         std::list<std::weak_ptr<Feature>> observations_;
 
@@ -43,14 +46,21 @@ namespace myslam {
             pos_ = pos;
         }
 
+        /**
+         * if new MapPoint/landmark exist, the corresponding
+         * feature will become the new observation and
+         * then be added into observations_ group
+         */
         void AddObservation(std::shared_ptr<Feature> feature) {
             std::unique_lock<std::mutex> lck(data_mutex_);
             observations_.push_back(feature);
             observed_times_++;
         }
 
-        // when feature is outlier
-        // the observations/MapPoint will be removed
+        /**
+         * when feature is outlier,
+         * the observations/MapPoint will be removed
+         */
         void RemoveObservation(std::shared_ptr<Feature> feat);
 
         std::list<std::weak_ptr<Feature>> GetObs() {

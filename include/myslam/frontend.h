@@ -12,6 +12,7 @@ namespace myslam {
     class Backend;
     class Viewer;
 
+    // three status in the frontend
     enum class FrontendStatus { INITING, TRACKING_GOOD, TRACKING_BAD, LOST };
 
     /**
