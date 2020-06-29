@@ -5,7 +5,7 @@ namespace myslam {
 
     MapPoint::MapPoint(long id, Vec3 position) : id_(id), pos_(position) {}
 
-    // create a new MapPoint and set a new id
+    // create a new MapPoint/landmark and set a new id
     // landmarks_.find(map_point->id_) == landmarks_.end() in map.cpp
     MapPoint::Ptr MapPoint::CreateNewMappoint() { // Static functions in a class
         static long factory_id = 0; // static variable in a function, lifetime

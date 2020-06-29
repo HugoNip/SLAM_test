@@ -112,50 +112,71 @@ namespace myslam {
     }
 
     void Frontend::SetObservationsForKeyFrame() {
+
         for (auto &feat : current_frame_->features_left_) {
+
             auto mp = feat->map_point_.lock();
+
+            // the 2D features corresponding to the 3D landmark
             if (mp) mp->AddObservation(feat);
         }
+
     }
 
     int Frontend::TriangulateNewPoints() {
+
         std::vector<SE3> poses{camera_left_->pose(), camera_right_->pose()};
+
         SE3 current_pose_Twc = current_frame_->Pose().inverse();
+
         int cnt_triangulated_pts = 0;
+
         for (size_t i = 0; i < current_frame_->features_left_.size(); ++i) {
+            /**
+             * For each feature in current frame,
+             * if there is no associated 3D MapPoint/landmark
+             * corresponding to the feature in the left image,
+             * and there is a corresponding feature in right image,
+             * then, use triangulation to estimate the MapPoint/landmark,
+             * and finally, insert the new MapPoint/landmark into the existed map
+             */
             if (current_frame_->features_left_[i]->map_point_.expired() &&
                 current_frame_->features_right_[i] != nullptr) {
-                /**
-                 * If there is no associated landmark for point of left image,
-                 * but there is a corresponding point in right image,
-                 * then, use triangulation to estimate
-                 */
+
                 std::vector<Vec3> points{
-                    camera_left_->pixel2camera(
+                    camera_left_->pixel2camera( // feature is represented by camera coordinate
                             Vec2(current_frame_->features_left_[i]->position_.pt.x,
                                     current_frame_->features_left_[i]->position_.pt.y)),
-                    camera_right_->pixel2camera(
+                    camera_right_->pixel2camera( // feature is represented by camera coordinate
                             Vec2(current_frame_->features_right_[i]->position_.pt.x,
                                  current_frame_->features_right_[i]->position_.pt.y))
                 };
+
+                // 3D point in the camera coordinate
                 Vec3 pworld = Vec3::Zero();
 
                 if (triangulation(poses, points, pworld) && pworld[2] > 0) {
-                    // insert the new landmark into existed map
+                    // if triangulation is successful, and pworld is the new calculated MapPoint/landmark
                     auto new_map_point = MapPoint::CreateNewMappoint();
-                    pworld = current_pose_Twc * pworld;
+                    pworld = current_pose_Twc * pworld; // in the world coordinate
                     new_map_point->SetPos(pworld);
+
+                    // link the new 3D MapPoint/landmark and features of left and right current frames
                     new_map_point->AddObservation(current_frame_->features_left_[i]);
                     new_map_point->AddObservation(current_frame_->features_right_[i]);
-
                     current_frame_->features_left_[i]->map_point_ = new_map_point;
                     current_frame_->features_right_[i]->map_point_ = new_map_point;
+
+                    // insert the new 3D MapPoint/landmark into the existed map
                     map_->InsertMapPoint(new_map_point);
+
                     cnt_triangulated_pts++;
                 }
             }
         }
+
         LOG(INFO) << "new landmarks: " << cnt_triangulated_pts;
+
         return cnt_triangulated_pts;
     }
 
@@ -241,6 +262,7 @@ namespace myslam {
                 feat->is_outlier_ = false; // maybe we can still use it in future
             }
         }
+
         return features.size() - cnt_outlier;
     }
 
