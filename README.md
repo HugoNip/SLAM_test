@@ -29,10 +29,6 @@ make
 ./bin/test_triangulation
 ```
 
-
-# Reference
-[Source](https://github.com/HugoNip/slambook2/tree/master/ch13)
-
 # Required Packages
 ### Glog Package
 #### Source
@@ -104,3 +100,6 @@ cmake ..
 make
 sudo make install
 ```
+
+# Reference
+[Source](https://github.com/HugoNip/slambook2/tree/master/ch13)
