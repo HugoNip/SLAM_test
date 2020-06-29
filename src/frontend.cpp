@@ -12,6 +12,7 @@ namespace myslam {
 
     Frontend::Frontend() {
 
+        // goodFeaturesToTrack
         gftt_ = cv::GFTTDetector::create(num_features_, 0.01, 20);
 
     }
@@ -33,7 +34,7 @@ namespace myslam {
                 Reset();
                 break;
         }
-        std::cout << "done!" << std::endl;
+        // std::cout << "Adding frame, done!" << std::endl;
 
         last_frame_ = current_frame_;
         return true;
@@ -42,24 +43,32 @@ namespace myslam {
     bool Frontend::Track() {
 
         if (last_frame_) {
+            // set the pose of current frame
             current_frame_->SetPose(relative_motion_ * last_frame_->Pose());
         }
 
         int num_track_last = TrackLastFrame();
+
         tracking_inliers_ = EstimateCurrentPose();
 
+        // [20, 50]
         if (tracking_inliers_ > num_features_tracking_) {
+            // 50 < tracking_inliers_
             // tracking good
             status_ = FrontendStatus::TRACKING_GOOD;
         } else if (tracking_inliers_ > num_features_tracking_bad_) {
+            // 20 < tracking_inliers_ <= 50
             // tracking bad
             status_ = FrontendStatus::TRACKING_BAD;
         } else {
+            // tracking_inliers_ <= 20
             // lost
             status_ = FrontendStatus::LOST;
         }
 
         InsertKeyframe();
+
+        // calculate the relative motion, inverse() is important
         relative_motion_ = current_frame_->Pose() * last_frame_->Pose().inverse();
 
         if (viewer_) viewer_->AddCurrentFrame(current_frame_);
@@ -68,25 +77,33 @@ namespace myslam {
     }
 
     bool Frontend::InsertKeyframe() {
+
         if (tracking_inliers_ >= num_features_needed_for_keyframe_) {
             // still have enough features, don't insert keyframe
             return false;
         }
-        // current frame is a new keyframe
-        current_frame_->SetKeyFrame();
-        map_->InsertKeyFrame(current_frame_);
 
+        /**
+         * if the tracking_inliers_ is relative small
+         * current frame will be set to the keyframe,
+         * then insert the current frame into keyframes group
+         * current_frame_->SetKeyFrame();
+         */
+        map_->InsertKeyFrame(current_frame_);
         LOG(INFO) << "Set frame " << current_frame_->id_ << " as keyframe "
                     << current_frame_->keyframe_id_;
 
+        // step 1: detect and extract new features
         SetObservationsForKeyFrame();
-        DetectFeatures(); // detect new features
+        DetectFeatures();
 
-        // track in right image
+        // step 2.1: find the corresponding features in right image
         FindFeaturesInRight();
-        // triangulate map points
+        // step 2.2: triangulate map points, and compute new landmarks
         TriangulateNewPoints();
-        // update back because we have a new keyframe
+
+        // step 3: add the new keyframe and landmarks into the map,
+        //         and activate a backend optimization process
         backend_->UpdateMap();
 
         if (viewer_) viewer_->UpdateMap();
