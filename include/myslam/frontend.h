@@ -63,7 +63,7 @@ namespace myslam {
 
         /**
          * estimate current frame's pose
-         * @return num of inliers
+         * @return num of inliers/tracking features
          */
         int EstimateCurrentPose();
 
@@ -121,7 +121,10 @@ namespace myslam {
         std::shared_ptr<Backend> backend_ = nullptr;
         std::shared_ptr<Viewer> viewer_ = nullptr;
 
-        SE3 relative_motion_; // between current frame and the last frame, initial pose of current frame
+        // the relative motion between current frame and the last frame,
+        // this variable is used to calculate the initial pose of current frame
+        // relative_motion_ * last_frame_->Pose()
+        SE3 relative_motion_;
 
         int tracking_inliers_ = 0; // inliers, used for testing new keyframes
 
