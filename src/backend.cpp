@@ -15,6 +15,16 @@ namespace myslam {
     void Backend::UpdateMap() {
         std::unique_lock<std::mutex> lock(data_mutex_);
         map_update_.notify_one();
+        /**
+         * public member function
+         * std::condition_variable::notify_one
+         * void notify_one() noexcept;
+         *
+         * Notify one
+         * Unblocks one of the threads currently waiting for this condition.
+         * If no threads are waiting, the function does nothing.
+         * If more than one, it is unspecified which of the threads is selected.
+         */
     }
 
     void Backend::Stop() {
@@ -28,13 +38,20 @@ namespace myslam {
             std::unique_lock<std::mutex> lock(data_mutex_);
             map_update_.wait(lock);
 
-            // In backend, only the activated frames and landmarks are optimized
+            // In the backend, only the activated frames and landmarks are optimized
             Map::KeyframesType active_kfs = map_->GetActiveKeyFrames();
             Map::LandmarksType active_landmarks = map_->GetActiveMapPoints();
             Optimize(active_kfs, active_landmarks);
         }
     }
 
+    /**
+     * @details optimize the MapPoints/landmarks and camera pose
+     * @details it will be activated after map_update_ wait for the notification
+     * @details map_update_.wait(lock) in the Backend::Backend()->void Backend::BackendLoop()
+     * @param keyframes
+     * @param landmarks
+     */
     void Backend::Optimize(Map::KeyframesType &keyframes, Map::LandmarksType &landmarks) {
         // setup g2o
         typedef g2o::BlockSolver_6_3 BlockSolverType;
@@ -102,8 +119,8 @@ namespace myslam {
                 }
 
                 edge->setId(index);
-                edge->setVertex(0, vertices.at(frame->keyframe_id_)); // pose
-                edge->setVertex(1, vertices_landmarks.at(landmark_id)); // landmark
+                edge->setVertex(0, vertices.at(frame->keyframe_id_));       // pose
+                edge->setVertex(1, vertices_landmarks.at(landmark_id));     // landmark
                 edge->setMeasurement(toVec2(feat->position_.pt));
                 edge->setInformation(Mat22::Identity());
                 auto rk = new g2o::RobustKernelHuber();
@@ -117,7 +134,7 @@ namespace myslam {
             }
         }
 
-        // do optimization and elimate the outliers
+        // do optimization and estimate the outliers
         optimizer.initializeOptimization();
         optimizer.optimize(10);
 

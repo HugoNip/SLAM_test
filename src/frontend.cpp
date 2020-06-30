@@ -37,13 +37,17 @@ namespace myslam {
         // std::cout << "Adding frame, done!" << std::endl;
 
         last_frame_ = current_frame_;
-        return true;
+        return true; // status: TRACKING_GOOD
     }
 
     bool Frontend::Track() {
 
         if (last_frame_) {
-            // set the pose of current frame
+            /**
+             * set the pose of current frame
+             * initialize pose of current frame before optimization
+             * current_frame_->pose_ is set
+             */
             current_frame_->SetPose(relative_motion_ * last_frame_->Pose());
         }
 
@@ -206,6 +210,9 @@ namespace myslam {
         std::vector<EdgeProjectionPoseOnly *> edges;
         std::vector<Feature::Ptr> features;
 
+        // many 2D features correspond to many MapPoints/landmarks
+        // each edge corresponds to a MapPoint-2D features, id is index (index++)
+        // all these edges correspond to only one camera pose
         for (size_t i = 0; i < current_frame_->features_left_.size(); ++i) {
             auto mp = current_frame_->features_left_[i]->map_point_.lock();
             if (mp) {
@@ -214,7 +221,7 @@ namespace myslam {
                 edge->setId(index);
 
                 // set the connected vertex
-                edge->setVertex(0, vertex_pose);
+                edge->setVertex(0, vertex_pose); // only for camera pose
 
                 // set measurement/practical value, z
                 edge->setMeasurement(toVec2(current_frame_->features_left_[i]->position_.pt));
@@ -229,8 +236,7 @@ namespace myslam {
             }
         }
 
-        // implement the optimization to estimate the Pose,
-        // and then, determine the outliers
+        // determine the outliers
         const double chi2_th = 5.991;
         int cnt_outlier = 0;
         for (int iteration = 0; iteration < 4; ++iteration) {
@@ -243,17 +249,18 @@ namespace myslam {
             // count the outliers
             for (size_t i = 0; i < edges.size(); ++i) {
                 auto e = edges[i];
+                // features->is_outlier = false (default)
                 if (features[i]->is_outlier_) {
                     e->computeError();
                 }
                 if (e->chi2() > chi2_th) { // outlier
-                    features[i]->is_outlier_ = true;
+                    features[i]->is_outlier_ = true; // default: false
                     e->setLevel(1);
                     cnt_outlier++;
-                } else {
+                } else { // e->chi2() <= chi2_th
                     features[i]->is_outlier_ = false;
                     e->setLevel(0);
-                };
+                }
                 if (iteration == 2) {
                     e->setRobustKernel(nullptr);
                 }
@@ -269,7 +276,7 @@ namespace myslam {
         LOG(INFO) << "Current Pose = \n" << current_frame_->Pose().matrix();
 
         for (auto &feat : features) {
-            if (feat->is_outlier_) {
+            if (feat->is_outlier_) { // true
                 feat->map_point_.reset();
                 feat->is_outlier_ = false; // maybe we can still use it in future
             }
@@ -279,10 +286,41 @@ namespace myslam {
     }
 
     int Frontend::TrackLastFrame() {
-        // use LK flow to estimate points in the last image
+        // use LK flow to estimate 2D features in the right frame
         std::vector<cv::Point2f> kps_last, kps_current;
         for (auto &kp : last_frame_->features_left_) {
             if (kp->map_point_.lock()) {
+                /**
+                 * public member function
+                 * std::weak_ptr::lock
+                 * shared_ptr<element_type> lock() const noexcept;
+                 * Lock and restore weak_ptr
+                 * Returns a shared_ptr with the information preserved by the weak_ptr object if it is not expired.
+                 *
+                 * If the weak_ptr object has expired (including if it is empty),
+                 * the function returns an empty shared_ptr (as if default-constructed).
+                 * Because shared_ptr objects count as an owner, this function locks the owned pointer,
+                 * preventing it from being released (for at least as long as the returned object does not releases it).
+                 *
+                 * This operation is executed atomically.
+                 *
+                 * Code:
+                 * std::shared_ptr<int> sp1,sp2;
+                 * std::weak_ptr<int> wp;
+                 *                                      // sharing group:
+                 *                                      // --------------
+                 * sp1 = std::make_shared<int> (20);    // sp1
+                 * wp = sp1;                            // sp1, wp
+                 *
+                 * sp2 = wp.lock();                     // sp1, wp, sp2
+                 * sp1.reset();                         //      wp, sp2
+                 *
+                 * sp1 = wp.lock();
+                 *
+                 * Output:
+                 * *sp1: 20
+                 * *sp2: 20
+                 */
                 // use project point
                 auto mp = kp->map_point_.lock();
                 auto px = camera_left_->world2pixel(mp->pos_, current_frame_->Pose());
@@ -307,6 +345,24 @@ namespace myslam {
         for (size_t i = 0; i < status.size(); ++i) {
             if (status[i]) {
                 cv::KeyPoint kp(kps_current[i], 7);
+                /**
+                 * template class cv::Point_
+                 * Template class for 2D points specified by its coordinates x and y
+                 *    Point_(_Tp _x, _Tp _y);
+                 *
+                 * typedef Point_<float> Point2f;
+                 *
+                 * class cv::KeyPoint
+                 * Data structure for salient point detectors.
+                 *    KeyPoint(
+                 *    Point2f _pt,
+                 *    float _size,
+                 *    float _angle = -1,
+                 *    float _response = 0,
+                 *    int _octave = 0,
+                 *    int _class_id = -1
+                 *    );
+                 */
                 Feature::Ptr feature(new Feature(current_frame_, kp));
                 feature->map_point_ = last_frame_->features_left_[i]->map_point_;
                 current_frame_->features_left_.push_back(feature);
@@ -363,17 +419,18 @@ namespace myslam {
             kps_left.push_back(kp->position_.pt);
             auto mp = kp->map_point_.lock();
             if (mp) {
-                // use projected points as initial guess
+                // use projected points as initial value
                 auto px = camera_right_->world2pixel(mp->pos_, current_frame_->Pose());
                 kps_right.push_back(cv::Point2f(px[0], px[1]));
             } else {
-                // use same pixel in left image
+                // use the pixel as same as the left image
                 kps_right.push_back(kp->position_.pt);
             }
         }
 
         std::vector<uchar> status;
         cv::Mat error;
+        // return status, error
         cv::calcOpticalFlowPyrLK(
                 current_frame_->left_img_, current_frame_->right_img_, kps_left,
                 kps_right, status, error, cv::Size(11, 11), 3,
