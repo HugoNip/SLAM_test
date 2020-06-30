@@ -7,8 +7,8 @@
 
 namespace myslam {
     /**
-     * read data from dataset
-     * After Initialization, it can get camera and the next frame
+     * @details read data from dataset.
+     * @details After Initialization, it can get camera and the next frame.
      */
     class Dataset {
     public:

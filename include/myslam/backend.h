@@ -9,10 +9,11 @@ namespace myslam {
     class Map;
 
     /**
-     * Backend
-     * has independent optimized thread, it will start when the map updates
-     * the updating of map is activated by frondend
-     * backend_->UpdateMap()
+     * @details Backend
+     * @details it has independent optimized thread,
+     * @details it will start when the map updates
+     * @details the updating of map is activated by frondend.cpp
+     * @details backend_->UpdateMap()
      */
     class Backend {
     public:

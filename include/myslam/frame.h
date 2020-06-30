@@ -35,25 +35,46 @@ public:
 public:
     Frame() {}
 
+    /**
+     * constructor
+     * @param id
+     * @param time_stamp
+     * @param pose
+     * @param left
+     * @param right
+     */
     Frame(long id, double time_stamp, const SE3 &pose,
             const cv::Mat &left, const cv::Mat &right);
 
-    // set and get pose, Tcw, thread safe
+    /**
+     * set and get pose, Tcw, thread safe
+     * @return
+     */
     SE3 Pose() {
         std::unique_lock<std::mutex> lck(pose_mutex_);
         return pose_;
     }
 
+    /**
+     * @param pose
+     * frame->pose_ is set
+     * but got by frame.Pose(), e.g., current_frame_->Pose()
+     */
     void SetPose(const SE3 &pose) {
         std::unique_lock<std::mutex> lck(pose_mutex_);
         pose_ = pose;
     }
 
-    // set keyframe and id
-    // keyframes_.find(frame->keyframe_id_) == keyframes_.end() in map.cpp
+    /**
+     * set keyframe and id
+     * keyframes_.find(frame->keyframe_id_) == keyframes_.end() in map.cpp
+     */
     void SetKeyFrame();
 
-    // factory mode and id
+    /**
+     * set factory mode and id
+     * @return frame
+     */
     static std::shared_ptr<Frame> CreateFrame(); // Static functions in a class/struct
 
 };

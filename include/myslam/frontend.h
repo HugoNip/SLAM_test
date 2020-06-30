@@ -16,9 +16,9 @@ namespace myslam {
     enum class FrontendStatus { INITING, TRACKING_GOOD, TRACKING_BAD, LOST };
 
     /**
-     * frondend
-     * compute pose of current frame, add the frame to map
-     * when it satisfies the condition of being a keyframe
+     * @details frondend
+     * @details compute pose of current frame, add the frame to map
+     * @details when it satisfies the condition of being a keyframe
      */
     class Frontend {
     public:
@@ -29,7 +29,6 @@ namespace myslam {
 
         bool AddFrame(Frame::Ptr frame);
 
-        // set functions
         void SetMap(Map::Ptr map) { map_ = map; }
 
         void SetBackend(std::shared_ptr<Backend> backend) { backend_ = backend; }
@@ -45,68 +44,77 @@ namespace myslam {
 
     private:
         /**
-         * Track in normal mode
+         * @details Track in normal mode
+         * @details bad status
          * @return true if success
          */
         bool Track();
 
         /**
-         * Reset when lost
+         * @details Reset when lost
          * @return true if success
          */
         bool Reset();
 
         /**
-         * Track with last frame
+         * @details Track with last frame
          * @return num of tracked points
          */
         int TrackLastFrame();
 
         /**
-         * estimate current frame's pose
+         * @details 3D-2D PnP, only for camera pose
+         * @details It only use left camera to estimate current frame's pose
+         * @details this problem can be regarded as mono VO,
+         * @details so the pose need to be initialized firstly.
+         * @details we know:
+         * @details 1. initialized_pose: current_frame_->Pose()
+         * @details 2. left_camera_intrinsic: K
+         * @details 3. 2D_features: current_frame_->features_left_
+         * @details 4. 3D_MapPoint/landmark_position: mp->pos_
          * @return num of inliers/tracking features
          */
         int EstimateCurrentPose();
 
         /**
-         * set current frame as a keyframe and insert it to backend
+         * @details set current frame as a keyframe and insert it to backend
          * @return true if success
          */
         bool InsertKeyframe();
 
         /**
-         * Try initialize the frontend with stereo images saved in current_frame_
+         * @details Try initialize the frontend with stereo images saved in current_frame_
          * @return true if success
          */
         bool StereoInit();
 
         /**
-         * Detect features in left image in current_frame_
-         * keypoints will be saved in current_frame_
+         * @details Detect features in left image in current_frame_
+         * @details keypoints will be saved in current_frame_
          * @return num of features found
          */
         int DetectFeatures();
 
         /**
-         * Find the corresponding features in right image of current_frame_
+         * @details Find the corresponding features in right image of current_frame_
          * @return num of features found
          */
         int FindFeaturesInRight();
 
         /**
-         * Build the initial map with single image
+         * @details Build the initial map with single image
          * @return true if succeed
          */
         bool BuildInitMap();
 
         /**
-         * Triangulate the 2D points in current frame
+         * @details Triangulate the 2D points in current frame
          * @return num of triangulated points
          */
         int TriangulateNewPoints();
 
         /**
-         * Set the features in keyframe as new observation of the map points
+         * @details Set the features in keyframe as new observation of the map points
          */
         void SetObservationsForKeyFrame();
 
