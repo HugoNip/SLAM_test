@@ -91,8 +91,9 @@ namespace myslam {
          * if the tracking_inliers_ is relative small
          * current frame will be set to the keyframe,
          * then insert the current frame into keyframes group
-         * current_frame_->SetKeyFrame();
          */
+
+        current_frame_->SetKeyFrame();
         map_->InsertKeyFrame(current_frame_);
         LOG(INFO) << "Set frame " << current_frame_->id_ << " as keyframe "
                     << current_frame_->keyframe_id_;

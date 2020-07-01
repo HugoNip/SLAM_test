@@ -108,8 +108,9 @@ namespace myslam {
             if (iter->second->observed_times_ == 0) {
                 iter = active_landmarks_.erase(iter);
                 cnt_landmark_removed++;
-            } else
+            } else {
                 ++iter;
+            }
         }
         LOG(INFO) << "Removed " << cnt_landmark_removed << " active landmarks";
     }
